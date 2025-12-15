@@ -1,0 +1,2 @@
+C:\Users\Student\Documents\Module Dev Containers\AR-Assignment\AR-Unity6-2526 Start\AR-Unity6-2526\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Users\Student\Documents\Module Dev Containers\AR-Assignment\AR-Unity6-2526 Start\AR-Unity6-2526\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

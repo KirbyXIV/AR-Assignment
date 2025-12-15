@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using TMPro;
 
 
 public class ARMultiImageTracker : MonoBehaviour
@@ -14,6 +15,17 @@ public class ARMultiImageTracker : MonoBehaviour
     private ARTrackedImageManager trackedImageManager;
     //spawned prefabs, indexed by name
     private Dictionary<string, GameObject> arObjects;
+
+    // Badge tracking
+    [SerializeField] private GameObject catVRbadgeUI; // UI to show when scanning an image
+    [SerializeField] private GameObject UniLogobadgeUI; // UI to show when scanning an image
+    [SerializeField] private GameObject CSSbadgeUI; // UI to show when scanning an image
+    [SerializeField] private GameObject ArcadeMachinebadgeUI; // UI to show when scanning an image
+    [SerializeField] private GameObject tooltipUI; // UI to show when scanning an image
+    [SerializeField] private GameObject allBadgesCompleteUI; // UI to show when all badges collected
+    [SerializeField] private TextMeshProUGUI badgeProgressText; // Text to show progress like "1/3"
+    [SerializeField] private int totalBadges = 3; // How many badges needed to complete
+    private List<string> collectedBadges = new List<string>();
 
     private void Start()
     {
@@ -34,6 +46,9 @@ public class ARMultiImageTracker : MonoBehaviour
             arObj.gameObject.SetActive(false);
             arObjects.Add(arObj.name, arObj);
         }
+
+        // Show initial progress
+        UpdateBadgeProgressUI();
     }
 
     private void OnDestroy() 
@@ -60,6 +75,14 @@ public class ARMultiImageTracker : MonoBehaviour
         }
     }
 
+    private void UpdateBadgeProgressUI()
+    {
+        if (badgeProgressText != null)
+        {
+            badgeProgressText.text = "Badges: " + collectedBadges.Count + "/" + totalBadges;
+        }
+    }
+
     private void UpdateTrackedImage(ARTrackedImage image)
     {
         //update tracked image marker based on reported tracking state
@@ -79,5 +102,124 @@ public class ARMultiImageTracker : MonoBehaviour
         arObjects[image.referenceImage.name].gameObject.SetActive(true);
         arObjects[image.referenceImage.name].transform.position = image.transform.position;
         arObjects[image.referenceImage.name].transform.rotation = image.transform.rotation;
+        
+        if (image.referenceImage.name == "Apple")
+        {
+            // Show UI when scanning
+            if (catVRbadgeUI != null)
+            {
+                catVRbadgeUI.SetActive(true);
+                // First time scanning this image?
+                if (!collectedBadges.Contains("Apple"))
+                {
+                    // Add to collected list
+                    collectedBadges.Add("Apple");
+                    Debug.Log("Badge collected: catVR! Total: " + collectedBadges.Count);
+
+                    // Update progress text
+                    UpdateBadgeProgressUI();
+
+                    // Check if all badges collected
+                    if (collectedBadges.Count >= totalBadges)
+                    {
+                        Debug.Log("All badges collected!");
+                        if (allBadgesCompleteUI != null)
+                        {
+                            allBadgesCompleteUI.SetActive(true);
+                            tooltipUI.SetActive(false);
+
+                        }
+                    }
+                }
+            }
+        }
+        if (image.referenceImage.name == "CSS")
+        {
+            if (CSSbadgeUI != null)
+            {
+                CSSbadgeUI.SetActive(true);
+                if (!collectedBadges.Contains("CSS"))
+                {
+                    collectedBadges.Add("CSS");
+                    Debug.Log("Badge collected: CSS! Total: " + collectedBadges.Count);
+
+                    // Update progress text
+                    UpdateBadgeProgressUI();
+
+
+
+                    if (collectedBadges.Count >= totalBadges)
+                    {
+                        Debug.Log("All badges collected!");
+                        if (allBadgesCompleteUI != null)
+                        {
+                            allBadgesCompleteUI.SetActive(true);
+                            tooltipUI.SetActive(false);
+
+                        }
+                    }
+                }
+            } 
+        }
+        if (image.referenceImage.name == "UniLogo")
+        {
+
+            if (UniLogobadgeUI != null)
+            {
+                UniLogobadgeUI.SetActive(true);
+                if (!collectedBadges.Contains("UniLogo"))
+                {
+                    collectedBadges.Add("UniLogo");
+                    Debug.Log("Badge collected: UniLogo! Total: " + collectedBadges.Count);
+
+                    // Update progress text
+                    UpdateBadgeProgressUI();
+
+                    if (collectedBadges.Count >= totalBadges)
+                    {
+                        Debug.Log("All badges collected!");
+                        if (allBadgesCompleteUI != null)
+                        {
+                            allBadgesCompleteUI.SetActive(true);
+                            tooltipUI.SetActive(false);
+
+                        }
+                    }
+                }
+            }
+        }
+        if (image.referenceImage.name == "ArcadeMachine")
+        {
+
+            if (ArcadeMachinebadgeUI != null)
+            {
+                ArcadeMachinebadgeUI.SetActive(true);
+                if (!collectedBadges.Contains("ArcadeMachine"))
+                {
+                    collectedBadges.Add("ArcadeMachine");
+                    Debug.Log("Badge collected: ArcadeMachine! Total: " + collectedBadges.Count);
+
+                    // Update progress text
+                    UpdateBadgeProgressUI();
+
+                    if (collectedBadges.Count >= totalBadges)
+                    {
+                        Debug.Log("All badges collected!");
+                        if (allBadgesCompleteUI != null)
+                        {
+                            allBadgesCompleteUI.SetActive(true);
+                            tooltipUI.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void ResetButton()
+    {
+        UniLogobadgeUI.SetActive(false);
+        CSSbadgeUI.SetActive(false);
+        catVRbadgeUI.SetActive(false);
+        ArcadeMachinebadgeUI.SetActive(false);
     }
 }

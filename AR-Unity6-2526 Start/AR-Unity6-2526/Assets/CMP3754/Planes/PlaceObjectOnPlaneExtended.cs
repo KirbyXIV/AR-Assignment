@@ -3,6 +3,7 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 // The PlaceObjectOnPlane class manages the placement and removal of objects on a detected plane in an AR scene.
 // It allows users to place an object by touching a detected plane and remove an object by touching it again.
@@ -83,11 +84,12 @@ public class PlaceObjectOnPlaneExtended : MonoBehaviour
                     // If the raycast hit a plane, get the pose (position and rotation) of the hit.
                     Pose hitPose = hits[0].pose;
 
-                    // Instantiate the object at the hit location on the plane.
                     GameObject newObject = Instantiate(objectToPlace, hitPose.position, hitPose.rotation);
-
-                    // Add the newly placed object to our list of spawned objects.
                     spawnedObjects.Add(newObject);
+
+                    // Start small and animate to full size
+                    newObject.transform.localScale = Vector3.zero;
+                    StartCoroutine(ScaleUp(newObject));
                 }
             }
         }
@@ -99,6 +101,14 @@ public class PlaceObjectOnPlaneExtended : MonoBehaviour
         if (highlighted==null) return false;
         GameObject cube = highlighted.transform.GetChild(0).gameObject;
         cube.GetComponent<MeshRenderer>().material = unhighlightMat;
+        
+        // Reverse rotation back to normal
+        SimpleGemsAnim anim = highlighted.GetComponentInChildren<SimpleGemsAnim>();
+        if (anim != null)
+        {
+            anim.rotationSpeed = Mathf.Abs(anim.rotationSpeed);
+        }
+        
         highlighted = null;
         return true;
 
@@ -116,6 +126,14 @@ public class PlaceObjectOnPlaneExtended : MonoBehaviour
         GameObject cube = obToHightlight.transform.GetChild(0).gameObject;
         cube.GetComponent<MeshRenderer>().material = highlightMat;
         highlighted = obToHightlight;
+        
+        // Reverse rotation direction
+        SimpleGemsAnim anim = obToHightlight.GetComponentInChildren<SimpleGemsAnim>();
+        if (anim != null)
+        {
+            anim.rotationSpeed = -Mathf.Abs(anim.rotationSpeed);
+        }
+        
         return true;
     }
 
@@ -141,9 +159,19 @@ public class PlaceObjectOnPlaneExtended : MonoBehaviour
     {
         objectToPlace = go;
     }
+
+    private IEnumerator ScaleUp(GameObject obj)
+    {
+        float duration = 0.3f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float scale = elapsed / duration;
+            obj.transform.localScale = Vector3.one * scale;
+            yield return null;
+        }
+        obj.transform.localScale = Vector3.one;
+    }
 }
-
-
-
-
-
